@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 void fsm_action(void *ctx);
-typedef typeof(fsm_action) *fsm_action_fn;
+typedef __typeof__(fsm_action) *fsm_action_fn;
 
 // responsible for transitioning 4m state X to state Z when event Y occurs, and executing action W.
 typedef struct {

@@ -23,7 +23,7 @@ extern "C" {
 // callback type 2 func 4 frame received
 // old times... -> typedef void (*frame_cb_t)(const uint8_t *payload, uint8_t len, void *user);
 void frame_cb(const uint8_t *payload, uint8_t len, void *user);
-typedef typeof(frame_cb)* frame_cb_t;
+typedef __typeof__(frame_cb)* frame_cb_t;
 
 typedef enum {
     FRAME_WAIT_START = 0,
