@@ -17,8 +17,15 @@ add_library(embedkit
     lib/fsm.c
     lib/frame_parser.c
     lib/debounce.c
+    transport/transport_mem.c
+    transport/transport.c
 )
-target_include_directories(embedkit PUBLIC lib)
+
+if(UNIX)
+  target_sources(embedkit PRIVATE transport/transport_tty.c)
+endif()
+
+target_include_directories(embedkit PUBLIC lib transport)
 target_compile_options(embedkit PRIVATE -Wall -Wextra -Wconversion)
 
 enable_testing()

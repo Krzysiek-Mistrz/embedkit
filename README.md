@@ -5,8 +5,10 @@ and subsequently used—without modifications—on an nRF52840 (via Zephyr / nRF
 Can be used also on other embedded systems like esp32 or stm32 platforms...
 
 ```
-lib/    bits, ringbuf, fsm, debounce, frame_parser   <- #0 hardware deps
-tests/  GoogleTest-based tests
+lib/        bits, ringbuf, fsm, debounce, frame_parser   <- #0 hardware deps
+transport/  transport_t interface + mem (any platform) & tty (posix only) backends
+examples/   demo_loopback, demo_tty_listen
+tests/      GoogleTest-based tests
 ```
 
 ## Build and testing on PC
@@ -105,6 +107,11 @@ worth comparing how it addresses these same challenges.
 - **Debounce**: Call `debounce_update()` at a fixed interval (e.g., every 5 ms using a `k_timer`).
 - **Frame parser**: The CRC is calculated over the `len` and `payload` fields. There is no byte-stuffing; 
 if an error occurs, the parser reverts to searching for the `0x7E` start byte.
+- **Transport**: `transport_t` (`transport/`) is a byte pipe (`write`, `read`, `ctx`) between a codec and an iface, so
+codecs like `frame_parser` dont care if bytes come from uart, tty or memory. Shipped backends: `transport_mem`
+(loopback, any platform) & `transport_tty` (posix only, PC side). Hardware specific backends (e.g. `transport_can.c`)
+live in ur app: they call HAL / Zephyr API inside `write` / `read` & fill a `transport_t`, the lib stays untouched.
+In a Zephyr app add only `transport/transport.c` to `target_sources`.
 - The compiler used for nRF is `arm-none-eabi-gcc` from the Zephyr SDK; the library utilizes
 `__atomic_*` built-ins (GCC/Clang). If using a different compiler, replace these with `<stdatomic.h>`.
 
